@@ -15,6 +15,7 @@ export class GameManager {
         if(this.waitingPlayer === null) {
             this.waitingPlayer = player;
             this.waitingPlayer.send({ type: 'waiting', message: "Waiting for an opponent..." })
+            console.log("Waiting for an opponent...");
         }
         else {
             const gameId = uuidv4();
@@ -25,6 +26,8 @@ export class GameManager {
             this.games[gameId] = newGame;
             this.waitingPlayer.send({ type: 'startGame', gameId, color: 'white' });
             player.send({ type: 'startGame', gameId, color: 'black' });
+
+            console.log("Game started");
 
             this.waitingPlayer = null;
         }

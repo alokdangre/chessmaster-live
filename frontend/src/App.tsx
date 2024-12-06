@@ -1,11 +1,11 @@
-import './App.css'
-import Game from './pages/Game'
+import Home from "./page/Home"
+
 
 function App() {
 
   return (
     <> 
-    <Game />
+    <Home></Home>
     </>
   )
 }
