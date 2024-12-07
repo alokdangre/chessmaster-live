@@ -39,7 +39,7 @@ export class Game {
             } else {
                 clearInterval(this.timeInterval!);
                 const winner = currentColor === "white" ? "Black" : "White";
-                this.endGame(`${winner} wins by timeout!`)
+                this.endGame(`${winner} wins by timeout!`,winner)
             }
         }, 1000);
     }
@@ -61,9 +61,8 @@ export class Game {
 
     handleDisconnection(disconnectedPlayer: Player): void {
         const remainingPlayer = Array.from(this.players.values()).find((player) => player !== disconnectedPlayer);
-
         if(remainingPlayer) {
-            this.endGame("Your opponent disconnected. You win!");
+            this.endGame("Your opponent disconnected. You win!","disconnected");
         }
     }
 
@@ -94,10 +93,11 @@ export class Game {
         }
         else if(this.chess.isCheckmate()) {
             const winner = this.currentTurn === "white" ? "Black" : "White";
-            this.endGame(`${winner} wins by checkmate!`);
+            this.endGame(`${winner} wins by checkmate!`,winner);
+            console.log(winner);
         }
         else if(this.chess.isStalemate()) {
-            this.endGame(`Game ends in a stalemate`);
+            this.endGame(`Game ends in a stalemate`,"draw");
         }
         else {
             sender.send(
@@ -118,13 +118,15 @@ export class Game {
         return null;
     }
 
-    private endGame(message: string): void {
+    endGame(message: string,winner: string): void {
         if(this.timeInterval) clearInterval(this.timeInterval);
+        console.log(winner);
 
         this.broadcast({
             type: 'gameOver',
             message,
             boardState: this.chess.fen(),
+            winner
         })
 
         console.log(message);
