@@ -91,14 +91,6 @@ export class Game {
                 timers: this.timers,
             });
         }
-        else if(this.chess.isCheckmate()) {
-            const winner = this.currentTurn === "white" ? "Black" : "White";
-            this.endGame(`${winner} wins by checkmate!`,winner);
-            console.log(winner);
-        }
-        else if(this.chess.isStalemate()) {
-            this.endGame(`Game ends in a stalemate`,"draw");
-        }
         else {
             sender.send(
                 JSON.stringify({
@@ -106,6 +98,15 @@ export class Game {
                     message: "Invalid move",
                 })
             )
+        }
+        
+        if(this.chess.isCheckmate()) {
+            const winner = this.currentTurn === "white" ? "Black" : "White";
+            this.endGame(`${winner} wins by checkmate!`,winner);
+            console.log(winner);
+        }
+        else if(this.chess.isStalemate()) {
+            this.endGame(`Game ends in a stalemate`,"draw");
         }
     }
 

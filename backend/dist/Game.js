@@ -71,18 +71,19 @@ class Game {
                 timers: this.timers,
             });
         }
-        else if (this.chess.isCheckmate()) {
-            const winner = this.currentTurn === "white" ? "Black" : "White";
-            this.endGame(`${winner} wins by checkmate!`, winner);
-        }
-        else if (this.chess.isStalemate()) {
-            this.endGame(`Game ends in a stalemate`, "draw");
-        }
         else {
             sender.send(JSON.stringify({
                 type: 'error',
                 message: "Invalid move",
             }));
+        }
+        if (this.chess.isCheckmate()) {
+            const winner = this.currentTurn === "white" ? "Black" : "White";
+            this.endGame(`${winner} wins by checkmate!`, winner);
+            console.log(winner);
+        }
+        else if (this.chess.isStalemate()) {
+            this.endGame(`Game ends in a stalemate`, "draw");
         }
     }
     getPlayerColor(socket) {

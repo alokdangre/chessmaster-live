@@ -59,6 +59,8 @@ export class GameManager {
     addSpectator(spectator: Player, gameId: string): void {
         if(this.games[gameId]) {
             this.games[gameId].addSpectator(spectator);
+            const boardState = this.games[gameId].chess.fen();
+            spectator.send({ type: 'spectateGame' ,boardState});
         }
         else {
             spectator.send({ type: 'error', message: 'Game not found' })
