@@ -3,7 +3,7 @@ import { GameManager } from "./GameManager";
 import { Player } from "./Player";
 import { MessageHandler } from "./MessageHandler";
 
-const wss = new WebSocketServer({ port: 8000 });
+const wss = new WebSocketServer({ port: 8001 });
 const gameManager = new GameManager();
 const onlinePlayers: { [playerId: string]: Player } = {};
 
