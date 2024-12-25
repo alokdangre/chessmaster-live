@@ -11,7 +11,7 @@ export default function Home() {
   const [playerCount] = useState({ total: 0, active: 0 })
 
   useEffect(() => {
-    ws.connect("ws://localhost:8001")
+    ws.connect("ws://localhost:8000")
 
     const handleGameStart = (data: { type: string; color: "white" | "black" }) => {
       if (data.type === "startGame" && data.color) {

@@ -13,7 +13,7 @@ export default function ChessGame() {
   const [searchParams] = useSearchParams()
   const [isSpectator, setIsSpectator] = useState(false)
   const navigate = useNavigate()
-  const [time] = useState({ white: 600, black: 600 }) // 10 minutes per player
+  const [time] = useState({ white: 600, black: 600 }) 
 
   useEffect(() => {
     const color = searchParams.get("color")
@@ -31,9 +31,10 @@ export default function ChessGame() {
     }
 
     const handleOpponentMove = (data: { type: string; boardState: string }) => {
-      if (data.type === "updateMove") {
+      // if (data.type === "updateMove") {
+        console.log("Opponent moved:", data.boardState)
         setFen(data.boardState)
-      }
+      // }
     }
 
     const handleGameOver = (data: { type: string; boardState: string; message: string; winner: string }) => {
@@ -62,14 +63,30 @@ export default function ChessGame() {
     }
   }, [orientation, searchParams, ws, navigate])
 
-  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: Square; targetSquare: Square }) => {
-    console.log("Attempting move:", { from: sourceSquare, to: targetSquare })
+  const onDrop = async ({ sourceSquare, targetSquare }: { sourceSquare: Square; targetSquare: Square }) => {
+    const isPawnPromotion = (sourceSquare[1] === "7" && targetSquare[1] === "8" && orientation === "white") ||
+                            (sourceSquare[1] === "2" && targetSquare[1] === "1" && orientation === "black");
+  
+    let promotionPiece = null;
+  
+    if (isPawnPromotion) {
+      promotionPiece = window.prompt("Promote to (q, r, b, n):", "q");
+      if (promotionPiece === null || !["q", "r", "b", "n"].includes(promotionPiece)) {
+        alert("Invalid promotion choice. Valid options are: q, r, b, n.");
+        return;
+      }
+    }
+  
+    console.log("Attempting move:", { from: sourceSquare, to: targetSquare, promotion: promotionPiece });
+  
     ws.send({
       type: "makeMove",
       from: sourceSquare,
       to: targetSquare,
-    })
-  }
+      promotion: promotionPiece, 
+    });
+  };
+  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

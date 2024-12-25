@@ -28,22 +28,24 @@ class Game {
             }
             else {
                 clearInterval(this.timeInterval);
+                this.timeInterval = null;
                 const winner = currentColor === "white" ? "Black" : "White";
                 this.endGame(`${winner} wins by timeout!`, winner);
             }
         }, 1000);
     }
     broadcast(message, excludeSocket = null) {
+        const serializedMessage = JSON.stringify(message);
         this.players.forEach((player) => {
             if (player.socket !== excludeSocket) {
-                player.send(message);
+                player.send(serializedMessage);
             }
         });
-        this.spectators.forEach((spectator) => spectator.send(message));
+        this.spectators.forEach((spectator) => spectator.send(serializedMessage));
     }
     addSpectator(spectator) {
         this.spectators.push(spectator);
-        spectator.send({ type: 'spectate', boardState: this.chess.fen() });
+        spectator.send(JSON.stringify({ type: "spectate", boardState: this.chess.fen() }));
     }
     handleDisconnection(disconnectedPlayer) {
         const remainingPlayer = Array.from(this.players.values()).find((player) => player !== disconnectedPlayer);
@@ -51,39 +53,57 @@ class Game {
             this.endGame("Your opponent disconnected. You win!", "disconnected");
         }
     }
-    makeMove(from, to, sender) {
+    makeMove(from, to, sender, promotion) {
         const playerColor = this.getPlayerColor(sender);
         if (playerColor !== this.currentTurn) {
             sender.send(JSON.stringify({
-                type: 'error',
+                type: "error",
                 message: "It's not your turn",
             }));
             return;
         }
-        const result = this.chess.move({ from, to });
-        console.log(result);
-        if (result) {
-            this.currentTurn = this.currentTurn === 'white' ? "black" : "white";
+        const moves = this.chess.moves({ square: from, verbose: true });
+        const isPawnPromotion = moves.some((move) => move.to === to && move.promotion);
+        let moveResult;
+        if (isPawnPromotion) {
+            if (!promotion || !["q", "r", "b", "n"].includes(promotion)) {
+                sender.send(JSON.stringify({
+                    type: "error",
+                    message: "Invalid or missing promotion piece. Valid options are q, r, b, n.",
+                }));
+                return;
+            }
+            console.log(from, to, promotion);
+            moveResult = this.chess.move({ from, to, promotion });
+        }
+        else {
+            console.log(from, to);
+            moveResult = this.chess.move({ from, to });
+        }
+        console.log(moveResult);
+        if (moveResult) {
+            console.log("Valid move");
+            this.currentTurn = this.currentTurn === "white" ? "black" : "white";
             this.broadcast({
-                type: 'updateMove',
-                move: { from, to },
+                type: "updateMove",
+                move: { from, to, promotion },
                 boardState: this.chess.fen(),
                 timers: this.timers,
             });
         }
         else {
             sender.send(JSON.stringify({
-                type: 'error',
+                type: "error",
                 message: "Invalid move",
             }));
+            return;
         }
         if (this.chess.isCheckmate()) {
             const winner = this.currentTurn === "white" ? "Black" : "White";
             this.endGame(`${winner} wins by checkmate!`, winner);
-            console.log(winner);
         }
         else if (this.chess.isStalemate()) {
-            this.endGame(`Game ends in a stalemate`, "draw");
+            this.endGame("Game ends in a stalemate", "draw");
         }
     }
     getPlayerColor(socket) {
@@ -95,16 +115,16 @@ class Game {
         return null;
     }
     endGame(message, winner) {
-        if (this.timeInterval)
+        if (this.timeInterval) {
             clearInterval(this.timeInterval);
-        console.log(winner);
+            this.timeInterval = null;
+        }
         this.broadcast({
-            type: 'gameOver',
+            type: "gameOver",
             message,
             boardState: this.chess.fen(),
-            winner
+            winner,
         });
-        console.log(message);
     }
 }
 exports.Game = Game;

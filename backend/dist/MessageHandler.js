@@ -58,6 +58,7 @@ class MessageHandler {
         }
     }
     handleMakeMove(player, data) {
+        console.log(data);
         if (!player.gameId) {
             player.send({ type: "error", message: "You are not in a game." });
             return;
@@ -67,7 +68,7 @@ class MessageHandler {
             player.send({ type: "error", message: "Game not found." });
             return;
         }
-        game.makeMove(data.from, data.to, player.socket);
+        game.makeMove(data.from, data.to, player.socket, data.promotion);
     }
     handleGameOver(player) {
         if (!player.gameId) {

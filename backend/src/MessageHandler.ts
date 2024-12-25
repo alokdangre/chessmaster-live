@@ -68,6 +68,7 @@ export class MessageHandler {
   }
 
   private handleMakeMove(player: Player, data: any): void {
+    console.log(data);
     if (!player.gameId) {
       player.send({ type: "error", message: "You are not in a game." });
       return;
@@ -79,7 +80,7 @@ export class MessageHandler {
       return;
     }
 
-    game.makeMove(data.from, data.to, player.socket);
+    game.makeMove(data.from, data.to, player.socket, data.promotion);
   }
 
   private handleGameOver(player: Player): void {
