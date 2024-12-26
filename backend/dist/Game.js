@@ -28,24 +28,22 @@ class Game {
             }
             else {
                 clearInterval(this.timeInterval);
-                this.timeInterval = null;
                 const winner = currentColor === "white" ? "Black" : "White";
                 this.endGame(`${winner} wins by timeout!`, winner);
             }
         }, 1000);
     }
     broadcast(message, excludeSocket = null) {
-        const serializedMessage = JSON.stringify(message);
         this.players.forEach((player) => {
             if (player.socket !== excludeSocket) {
-                player.send(serializedMessage);
+                player.send(message);
             }
         });
-        this.spectators.forEach((spectator) => spectator.send(serializedMessage));
+        this.spectators.forEach((spectator) => spectator.send(message));
     }
     addSpectator(spectator) {
         this.spectators.push(spectator);
-        spectator.send(JSON.stringify({ type: "spectate", boardState: this.chess.fen() }));
+        spectator.send({ type: 'spectate', boardState: this.chess.fen() });
     }
     handleDisconnection(disconnectedPlayer) {
         const remainingPlayer = Array.from(this.players.values()).find((player) => player !== disconnectedPlayer);
@@ -57,7 +55,7 @@ class Game {
         const playerColor = this.getPlayerColor(sender);
         if (playerColor !== this.currentTurn) {
             sender.send(JSON.stringify({
-                type: "error",
+                type: 'error',
                 message: "It's not your turn",
             }));
             return;
@@ -68,32 +66,28 @@ class Game {
         if (isPawnPromotion) {
             if (!promotion || !["q", "r", "b", "n"].includes(promotion)) {
                 sender.send(JSON.stringify({
-                    type: "error",
+                    type: 'error',
                     message: "Invalid or missing promotion piece. Valid options are q, r, b, n.",
                 }));
                 return;
             }
-            console.log(from, to, promotion);
             moveResult = this.chess.move({ from, to, promotion });
         }
         else {
-            console.log(from, to);
             moveResult = this.chess.move({ from, to });
         }
-        console.log(moveResult);
         if (moveResult) {
-            console.log("Valid move");
-            this.currentTurn = this.currentTurn === "white" ? "black" : "white";
+            this.currentTurn = this.currentTurn === 'white' ? "black" : "white";
             this.broadcast({
-                type: "updateMove",
-                move: { from, to, promotion },
+                type: 'updateMove',
+                move: { from, to, promotion: promotion || null },
                 boardState: this.chess.fen(),
                 timers: this.timers,
             });
         }
         else {
             sender.send(JSON.stringify({
-                type: "error",
+                type: 'error',
                 message: "Invalid move",
             }));
             return;
@@ -101,9 +95,10 @@ class Game {
         if (this.chess.isCheckmate()) {
             const winner = this.currentTurn === "white" ? "Black" : "White";
             this.endGame(`${winner} wins by checkmate!`, winner);
+            console.log(winner);
         }
         else if (this.chess.isStalemate()) {
-            this.endGame("Game ends in a stalemate", "draw");
+            this.endGame(`Game ends in a stalemate`, "draw");
         }
     }
     getPlayerColor(socket) {
@@ -115,16 +110,16 @@ class Game {
         return null;
     }
     endGame(message, winner) {
-        if (this.timeInterval) {
+        if (this.timeInterval)
             clearInterval(this.timeInterval);
-            this.timeInterval = null;
-        }
+        console.log(winner);
         this.broadcast({
-            type: "gameOver",
+            type: 'gameOver',
             message,
             boardState: this.chess.fen(),
-            winner,
+            winner
         });
+        console.log(message);
     }
 }
 exports.Game = Game;
