@@ -2,8 +2,10 @@ import { WebSocket, WebSocketServer } from "ws";
 import { GameManager } from "./GameManager";
 import { Player } from "./Player";
 import { MessageHandler } from "./MessageHandler";
+import dotenv from "dotenv";
+dotenv.config();
 
-const wss = new WebSocketServer({ port: 8000 });
+const wss = new WebSocketServer({ port: process.env.PORT ? parseInt(process.env.PORT) : 8000 });
 const gameManager = new GameManager();
 const onlinePlayers: { [playerId: string]: Player } = {};
 

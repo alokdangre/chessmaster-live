@@ -11,7 +11,7 @@ export default function Home() {
   const [playerCount] = useState({ total: 0, active: 0 })
 
   useEffect(() => {
-    ws.connect("ws://localhost:8000")
+    ws.connect(import.meta.env.WEBSOCKET_URL);
 
     const handleGameStart = (data: { type: string; color: "white" | "black" }) => {
       if (data.type === "startGame" && data.color) {

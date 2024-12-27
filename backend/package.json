@@ -12,6 +12,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "chess.js": "^1.0.0-beta.8",
+    "dotenv": "^16.4.7",
     "mongoose": "^8.9.2",
     "uuid": "^11.0.3"
   },
