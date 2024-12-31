@@ -1,10 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
 const GameManager_1 = require("./GameManager");
 const Player_1 = require("./Player");
 const MessageHandler_1 = require("./MessageHandler");
-const wss = new ws_1.WebSocketServer({ port: process.env.PORT ? parseInt(process.env.PORT) : undefined });
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const wss = new ws_1.WebSocketServer({ port: process.env.PORT ? parseInt(process.env.PORT) : 8000 });
 const gameManager = new GameManager_1.GameManager();
 const onlinePlayers = {};
 const messageHandler = new MessageHandler_1.MessageHandler(gameManager, onlinePlayers);
