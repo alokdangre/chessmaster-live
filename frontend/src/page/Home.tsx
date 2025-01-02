@@ -11,6 +11,7 @@ export default function Home() {
   const [playerCount] = useState({ total: 0, active: 0 })
 
   useEffect(() => {
+    console.log(import.meta.env.VITE_WEBSOCKET_URL);
     ws.connect(import.meta.env.VITE_WEBSOCKET_URL);
 
     const handleGameStart = (data: { type: string; color: "white" | "black" }) => {
