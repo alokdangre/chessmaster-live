@@ -47,15 +47,3 @@ To run this project locally, follow these steps:
     npm run start
     ```
     The server will run on `ws://localhost:8000`.
-
-## Testing
-
-To ensure the integrity of the system, unit tests are written for all critical functionalities, including:
-- WebSocket connection handling
-- Game join and spectate logic
-- Game move validations
-- Invitation flow with time limits
-
-To run the tests:
-```bash
-npm run test
