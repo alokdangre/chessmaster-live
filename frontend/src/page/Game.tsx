@@ -31,10 +31,7 @@ export default function ChessGame() {
     }
 
     const handleOpponentMove = (data: { type: string; boardState: string }) => {
-      // if (data.type === "updateMove") {
-      console.log("Opponent moved:", data.boardState);
       setFen(data.boardState);
-      // }
     };
 
     const handleGameOver = (data: {
@@ -71,17 +68,16 @@ export default function ChessGame() {
     };
   }, [orientation, searchParams, ws, navigate]);
 
-  const onDrop = async ({
-    sourceSquare,
-    targetSquare,
-  }: {
+  const onDrop = async (data: {
     sourceSquare: Square;
     targetSquare: Square;
   }) => {
+    const { sourceSquare, targetSquare } = data;
+
     const isPawn =
       sourceSquare[0] >= "a" &&
       sourceSquare[0] <= "h" &&
-      (sourceSquare[1] === "2" || sourceSquare[1] === "7"); 
+      (sourceSquare[1] === "2" || sourceSquare[1] === "7");
 
     const isPawnPromotion =
       isPawn &&
@@ -105,12 +101,6 @@ export default function ChessGame() {
       }
     }
 
-    console.log("Attempting move:", {
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: promotionPiece,
-    });
-
     ws.send({
       type: "makeMove",
       from: sourceSquare,
@@ -126,9 +116,9 @@ export default function ChessGame() {
   };
 
   return (
-    <div className="min-h-screen bg-[#312E2B] text-white">
-      <div className="mx-auto max-w-6xl p-8">
-        <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-[#312E2B] text-white flex flex-col">
+      <div className="mx-auto w-full max-w-6xl p-4 sm:p-8">
+        <div className="mb-4 sm:mb-8 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
@@ -137,9 +127,9 @@ export default function ChessGame() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Exit Game
           </Button>
-          <div className="text-2xl font-bold">Chess Arena</div>
+          <div className="text-xl sm:text-2xl font-bold">Chess Arena</div>
         </div>
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-8">
           <div className="space-y-4">
             <div className="rounded-lg bg-[#272522] p-4">
               <div className="mb-2 flex items-center justify-between">
@@ -154,7 +144,7 @@ export default function ChessGame() {
           </div>
           <div className="rounded-lg bg-[#272522] p-4">
             <Chessboard
-              width={560}
+              width={Math.min(560, window.innerWidth * 0.8)}
               position={fen}
               orientation={orientation}
               draggable={!isSpectator}
