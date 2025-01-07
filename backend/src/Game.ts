@@ -1,6 +1,7 @@
 import { WebSocket } from "ws";
 import { Player } from "./Player";
 import { Chess, Square } from 'chess.js'
+import { GameManager } from "./GameManager";
 
 export class Game {
     id: string;
@@ -10,8 +11,9 @@ export class Game {
     timers: {white: number; black: number};
     currentTurn: "white" | "black";
     timeInterval: NodeJS.Timeout | null;
+    gameManager: GameManager;
 
-    constructor(id: string, player1: Player,player2: Player, initialTime = 300) {
+    constructor(id: string, player1: Player,player2: Player, initialTime = 300,gameManager : GameManager) {
         this.id = id;
         this.players = new Map<string, Player>([
             ["white", player1],
@@ -22,6 +24,7 @@ export class Game {
         this.timers = {white: initialTime, black: initialTime};
         this.currentTurn = "white";
         this.timeInterval = null;
+        this.gameManager = gameManager
 
         this.startTimer();
     }
@@ -143,6 +146,8 @@ export class Game {
             boardState: this.chess.fen(),
             winner
         })
+
+        this.gameManager.removeGame(this.id);
 
         console.log(message);
     }

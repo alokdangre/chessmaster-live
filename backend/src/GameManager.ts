@@ -21,7 +21,7 @@ export class GameManager {
             const gameId = uuidv4();
             player.gameId = gameId;
             this.waitingPlayer.gameId = gameId; 
-            const newGame = new Game(gameId, this.waitingPlayer, player);
+            const newGame = new Game(gameId, this.waitingPlayer, player,10,this);
 
             this.games[gameId] = newGame;
             this.waitingPlayer.send({ type: 'startGame', gameId, color: 'white' });
@@ -50,7 +50,7 @@ export class GameManager {
         player1.gameId = gameId;
         player2.gameId = gameId;
     
-        const newGame = new Game(gameId, player1, player2);
+        const newGame = new Game(gameId, player1, player2, 10,this);
         this.games[gameId] = newGame;
     
         return gameId;
