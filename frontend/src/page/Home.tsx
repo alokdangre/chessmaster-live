@@ -11,8 +11,7 @@ export default function Home() {
   const [playerCount] = useState({ total: 0, active: 0 })
 
   useEffect(() => {
-    console.log(import.meta.env.VITE_WEBSOCKET_URL);
-    ws.connect(import.meta.env.VITE_WEBSOCKET_URL);
+    ws.connect(import.meta.env.VITE_WEBSOCKET_URL)
 
     const handleGameStart = (data: { type: string; color: "white" | "black" }) => {
       if (data.type === "startGame" && data.color) {
@@ -31,6 +30,7 @@ export default function Home() {
 
     return () => {
       ws.off("startGame", handleGameStart)
+      ws.off("spectateGame", handleSpectate)
     }
   }, [ws, navigate])
 
@@ -43,30 +43,30 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#312E2B] text-white">
-      <nav className="fixed left-0 top-0 h-full w-64 bg-[#272522] p-4">
-        <div className="mb-8">
+      <nav className="fixed left-0 top-0 h-full w-64 bg-[#272522] p-4 md:static md:w-full md:h-auto">
+        <div className="mb-8 flex justify-between md:items-center md:flex-row">
           <h1 className="text-2xl font-bold">Chess Arena</h1>
         </div>
-        <div className="space-y-2">
-          <Button variant="ghost" className="w-full justify-start text-white hover:bg-[#3E3B38]">
+        <div className="space-y-2 md:flex md:space-y-0 md:space-x-4">
+          <Button variant="ghost" className="w-full text-white hover:bg-[#3E3B38] md:w-auto">
             Play
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-white hover:bg-[#3E3B38]">
+          <Button variant="ghost" className="w-full text-white hover:bg-[#3E3B38] md:w-auto">
             Puzzles
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-white hover:bg-[#3E3B38]">
+          <Button variant="ghost" className="w-full text-white hover:bg-[#3E3B38] md:w-auto">
             Learn
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-white hover:bg-[#3E3B38]">
+          <Button variant="ghost" className="w-full text-white hover:bg-[#3E3B38] md:w-auto">
             Watch
           </Button>
         </div>
       </nav>
-      <main className="ml-64 p-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="mb-2 text-5xl font-bold">Play Chess Online</h1>
-          <h2 className="mb-8 text-2xl text-gray-400">on Chess Arena!</h2>
-          <div className="mb-8 flex justify-center gap-4 text-sm text-gray-400">
+      <main className="ml-64 p-8 md:ml-0">
+        <div className="mx-auto max-w-4xl text-center px-4">
+          <h1 className="mb-2 text-4xl font-bold md:text-5xl">Play Chess Online</h1>
+          <h2 className="mb-8 text-xl text-gray-400 md:text-2xl">on Chess Arena!</h2>
+          <div className="mb-8 flex flex-col items-center gap-4 text-sm text-gray-400 sm:flex-row sm:justify-center">
             <div>
               <span className="font-bold text-white">{playerCount.total.toLocaleString()}</span> Games Today
             </div>
@@ -83,7 +83,7 @@ export default function Home() {
             >
               <Users className="mr-2 h-5 w-5" />
               {isWaiting ? "Waiting for Opponent..." : "Play Online"}
-              <span className="ml-2 text-sm opacity-80">Play with someone at your level</span>
+              <span className="ml-2 text-sm opacity-80 hidden sm:inline">Play with someone at your level</span>
             </Button>
             <Button
               variant="secondary"
@@ -93,7 +93,7 @@ export default function Home() {
             >
               <Bot className="mr-2 h-5 w-5" />
               Watch Games
-              <span className="ml-2 text-sm opacity-80">Spectate live matches</span>
+              <span className="ml-2 text-sm opacity-80 hidden sm:inline">Spectate live matches</span>
             </Button>
           </div>
         </div>
@@ -101,4 +101,3 @@ export default function Home() {
     </div>
   )
 }
-
