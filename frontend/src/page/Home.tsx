@@ -24,7 +24,6 @@ export default function Home() {
         navigate(`/chess-game?color=${data.boardState}`)
       }
     }
-
     ws.on("startGame", handleGameStart)
     ws.on("spectateGame", handleSpectate)
 
